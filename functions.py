@@ -19,6 +19,7 @@ def get_documents_directory():
     elif system == "Linux":
         return os.path.join(userHome, "Documents")
     else:
+        messagebox.showinfo("Error", "Unsupported operating system.")
         raise OSError("Unsupported operating system")
     
 DOCUMENTS_DIR = get_documents_directory()
@@ -75,6 +76,7 @@ def save_file(textWidget):
     filePath = filePath.replace("\\", "/")
     fileName = filePath.split("/")[-1].split(".")[0]
     if fileName == "default":
+        print("Save failed. You can not edit the default note.")
         messagebox.showinfo("Save failed", "You can not edit the default note.")
         return
 
@@ -86,11 +88,11 @@ def save_file(textWidget):
         with open(filePath, "w") as file:
             file.write(text)
         print(f"{filePath} successfully saved.")
-        
         messagebox.showinfo("Succesfully saved", "File saved successfully.")
 
     except:
         print(f"Error: Couldn't save {filePath}")
+        messagebox.showinfo("Save failed", "File failed to save.")
         raise
 
 
@@ -122,6 +124,7 @@ def open_file(textWidget, filePath, window):
 
         except:
             print("Error: Couldn't read {DEFAULT_FILE_PATH}")
+            messagebox.showinfo("Read failed", "Couldn't read file.")
             raise
             
 
@@ -140,6 +143,7 @@ def open_file(textWidget, filePath, window):
         
         except:
             print("Error: Couldn't write to {LAST_SNOTE_INFO_PATH}")
+            messagebox.showinfo("Write failed", "Couldn't write to file.")
             raise
 
     
@@ -155,11 +159,10 @@ def create_file(textWidget, mainTextWidget, window):
     
     else:
         with open(filePath, "w"):
-            pass   
-        print(f"Created {filePath}")    
+            pass     
         createFileWin.destroy()
         open_file(mainTextWidget, filePath, window)
-        
+        print(f"Created {filePath}")        
         messagebox.showinfo("Succesfully created", "The file was created successfully.")
 
 
@@ -208,11 +211,13 @@ def confirm_deletion(confirmationText, textWidget, window):
 
         if os.path.exists(fileToDelete):
             os.remove(fileToDelete)
-            print(f"The file {fileToDelete} has been successfully removed.")
             deleteFileWin.destroy()
+            print(f"The file {fileToDelete} has been successfully removed.")            
+            messagebox.showinfo("Succesfull deletion", "The file was deleted successfully.")
 
         else:
             print(f"The file {fileToDelete} does not exist.")
+            messagebox.showinfo("Deletion failed", "Couldn't delete file. It doesn't exist.")
 
         goToDefaultFile = FILE_SAVE_DIR + "\\default.snote"
         open_file(textWidget, goToDefaultFile, window)
@@ -233,6 +238,7 @@ def delete_file_confirmation(textWidget, window):
     fileToDelete = fileToDelete.replace("\\", "/")
     fileName = fileToDelete.split("/")[-1].split(".")[0]
     if fileName == "default":
+        print("Deletion failed. You can not delete the default note.")
         messagebox.showinfo("Deletion failed", "You can not delete the default note.")
         return
 
