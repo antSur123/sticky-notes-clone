@@ -22,7 +22,10 @@ def get_documents_directory():
     
 DOCUMENTS_DIR = get_documents_directory()
 FILE_SAVE_DIR = DOCUMENTS_DIR + "\\StickyNotes notes"
+SNOTE_INFO_PATH = FILE_SAVE_DIR + "\\snote.inf"
 
+
+# Checks if the save directory exists
 def check_save_dir_exists():
     if os.path.exists(FILE_SAVE_DIR): 
         print("{FILE_SAVE_DIR} valid")
@@ -30,25 +33,40 @@ def check_save_dir_exists():
         raise Exception(f"{FILE_SAVE_DIR} wasn't found")
 
 
+# Checks if the snote.inf file exists
+def check_snote_inf_exists():
+    DEFAULT_FILE_PATH = FILE_SAVE_DIR + "\\default.snote"
+    if os.path.isfile(SNOTE_INFO_PATH):
+        print("{SNOTE_INFO_PATH} exists.")
+        
+    else:
+        with open(SNOTE_INFO_PATH, "w") as file:
+            file.write(DEFAULT_FILE_PATH)
+
+
+# Reads the last oppened file
+def read_last_opened_file():
+    check_snote_inf_exists()
+
+    with open(SNOTE_INFO_PATH, "r") as file:
+        return file.readline()
+
+
 # Loads the text from a note
-def load_note(noteName, textWidget):
+def load_note(note_name):
     fileExt = ".snote"
-    filePath = f"{FILE_SAVE_DIR}\\1{fileExt}"
-    print(f"{filePath=}")
-    loadedText = ""
-
+    file_path = f"{FILE_SAVE_DIR}\\1{fileExt}"
+    print(f"{file_path=}")
+    text = ""
     try:
-        with open(filePath, "r") as file:
-            loadedText = file.read()
+        with open(file_path, "r") as file:
+            text = file.read()
         print("Successfully read.")
-
     except:
         print("Error: Couldn't read.")
         raise
-
     finally:
-        textWidget.delete("1.0", "end")
-        textWidget.insert(index=1.0, chars=loadedText)
+        return text
 
 
 # Saves current file
@@ -57,24 +75,36 @@ def save_file(textWidget, fileName = 1):
     filePath = f"{FILE_SAVE_DIR}\\1{fileExt}"
     text = textWidget.get("1.0", tk.END)
 
+    debugTextFilePath = "\\" + filePath.split("\\")[-1]
     try:
         with open(filePath, "w") as file:
             file.write(text)
-        print("Successfully saved.")
+        print(f"{debugTextFilePath} successfully saved.")
 
     except:
-        print("Error: Couldn't save.")
+        print(f"Error: Couldn't save {debugTextFilePath}")
         raise
 
 
 # Opens a file
-def open_file():
-    openFile = filedialog.askopenfilename(
-        initialdir = FILE_SAVE_DIR,
-        filetypes=[("Sticky Note File", "*.snote")]
-    )
+def open_file(textWidget, filePath = None):
+    if type(filePath) == None:
+        filePath = filedialog.askopenfilename(
+                                    initialdir = FILE_SAVE_DIR,
+                                    filetypes=[("Sticky Note File", "*.snote")]
+                                    )
 
-    print(openFile)
+    try:
+        with open(filePath, "r") as file:
+            loadedText = file.read()
+        print(f'Successfully read {filePath}')
+        
+        textWidget.delete("1.0", "end")
+        textWidget.insert(index=1.0, chars=loadedText)
+
+    except:
+        print(f"Error: Couldn't read {filePath}")
+        raise
 
     
 # Create new note file
@@ -120,7 +150,3 @@ def create_file_gui():
     submitButton.grid(row=2, columnspan=100, pady=(10, 10))
 
     createFileWin.mainloop()
-
-
-
-check_save_dir_exists()
