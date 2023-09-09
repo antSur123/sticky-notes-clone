@@ -105,13 +105,32 @@ def open_file(textWidget, filePath, window):
     try:
         with open(filePath, "r") as file:
             loadedText = file.read()
+
+        editedFilePath = filePath.replace("\\", "/")
+        windowTitle = "Notes  |  " + editedFilePath.split("/")[-1].split(".")[0]
+
+    except:
+        print(f"Error: Couldn't read {filePath}")
+        print("Trying to open {DEFAULT_FILE_PATH} instead.")
+        check_save_dir_exists()
+        check_default_snote_exists()
+
+        try:
+            with open(DEFAULT_FILE_PATH, "r") as file:
+                loadedText = file.read()
+                windowTitle = "Notes  |  default"
+
+        except:
+            print("Error: Couldn't read {DEFAULT_FILE_PATH}")
+            raise
+            
+
+    finally:
         print(f'Successfully read {filePath}')
 
         textWidget.delete("1.0", tk.END)
         textWidget.insert(index=1.0, chars=loadedText)
 
-        editedFilePath = filePath.replace("\\", "/")
-        windowTitle = "Notes  |  " + editedFilePath.split("/")[-1].split(".")[0]
         window.title(windowTitle)
 
         # Update last oppened file
@@ -122,10 +141,6 @@ def open_file(textWidget, filePath, window):
         except:
             print("Error: Couldn't write to {LAST_SNOTE_INFO_PATH}")
             raise
-
-    except:
-        print(f"Error: Couldn't read {filePath}")
-        raise
 
     
 # Create new note file
