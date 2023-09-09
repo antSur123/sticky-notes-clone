@@ -1,6 +1,6 @@
 # sticky-notes-clone
+
 A basic light-weight sticky notes app
----
 This app is straightforward to use. 
 
 Every time you run the app, it will look for the `StickyNotes notes` folder in your computer's main document folder. If it can't find it, it will create the directory.
