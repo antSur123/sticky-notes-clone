@@ -1,13 +1,14 @@
 # Imports
 import tkinter as tk
-from functions import (save_file, open_file, create_file_gui, 
-                       read_last_opened_file, check_save_dir_exists,
-                       check_snote_inf_exists
+from functions import (check_save_dir_exists, check_snote_inf_exists,
+                       check_default_snote_exists, save_file, open_file,
+                       create_file_gui, read_last_opened_file,
+                       delete_file_confirmation
                        )
 
 check_save_dir_exists()
+check_default_snote_exists()
 check_snote_inf_exists()
-
 
 # Screen consts
 SCREEN_WIDTH = 400
@@ -27,19 +28,23 @@ TEXT_WIDGET_HEIGHT = SCREEN_HEIGHT // TXT_ROW_HEIGHT - BUTTON_HEIGHT
 mainWin = tk.Tk()
 mainWin.title("Notes")
 mainWin.geometry(SCREEN_GEOMETRY)
+mainWin.resizable(0, 0)
 
 
 # Create Text Widget
 noteTextWidget = tk.Text(mainWin, width=TEXT_WIDGET_WIDTH, height=TEXT_WIDGET_HEIGHT)
 lastOpenedFile = read_last_opened_file()
-open_file(noteTextWidget, lastOpenedFile)
+open_file(noteTextWidget, lastOpenedFile, mainWin)
+
+noteTextWidget.focus_set()
 
 
 # Menu buttons
 # 2d list of buttons [ ["name", command], ["name1", command1], ... ]
-buttonList = [["Save",  lambda: save_file(noteTextWidget)],
-              ["Open",  lambda: open_file(noteTextWidget)],
-              ["New Note",      create_file_gui]
+buttonList = [["Save",      lambda: save_file(noteTextWidget)],
+              ["Open",      lambda: open_file(noteTextWidget, None, mainWin)],
+              ["New Note",  lambda: create_file_gui(noteTextWidget, mainWin)],
+              ["Delete Note", lambda: delete_file_confirmation(noteTextWidget, mainWin)]
               ]
 
 noteTextWidget.grid(row=0, column=0, columnspan=len(buttonList))
