@@ -1,10 +1,13 @@
 # Imports
 import tkinter as tk
 from functions import (check_save_dir_exists, check_snote_inf_exists,
-                       check_default_snote_exists, save_file, open_file,
+                       check_default_snote_exists, on_close, save_file, open_file,
                        create_file_gui, read_last_opened_file,
                        delete_file_confirmation
                        )
+
+# TODO  Add asterisk in not saved file. Ask to save file before you close,
+# TODO      open or create another note.
 
 check_save_dir_exists()
 check_default_snote_exists()
@@ -29,10 +32,11 @@ mainWin = tk.Tk()
 mainWin.title("Notes")
 mainWin.geometry(SCREEN_GEOMETRY)
 mainWin.resizable(0, 0)
+mainWin.protocol("WM_DELETE_WINDOW", lambda: on_close(mainWin))
 
 
 # Create Text Widget
-noteTextWidget = tk.Text(mainWin, width=TEXT_WIDGET_WIDTH, height=TEXT_WIDGET_HEIGHT)
+noteTextWidget = tk.Text(mainWin, TEXT_WIDGET_WIDTH, TEXT_WIDGET_HEIGHT)
 lastOpenedFile = read_last_opened_file()
 open_file(noteTextWidget, lastOpenedFile, mainWin)
 
@@ -41,10 +45,10 @@ noteTextWidget.focus_set()
 
 # Menu buttons
 # 2d list of buttons [ ["name", command], ["name1", command1], ... ]
-buttonList = [["Save",      lambda: save_file(noteTextWidget)],
-              ["Open",      lambda: open_file(noteTextWidget, None, mainWin)],
-              ["New Note",  lambda: create_file_gui(noteTextWidget, mainWin)],
-              ["Delete Note", lambda: delete_file_confirmation(noteTextWidget, mainWin)]
+buttonList = [["Save",      lambda: save_file(noteTextWidget) ],
+              ["Open",      lambda: open_file(noteTextWidget, None, mainWin) ],
+              ["New Note",  lambda: create_file_gui(noteTextWidget, mainWin) ],
+              ["Delete Note", lambda: delete_file_confirmation(noteTextWidget, mainWin) ]
               ]
 
 noteTextWidget.grid(row=0, column=0, columnspan=len(buttonList))

@@ -61,6 +61,23 @@ Enjoy!")
             file.write(text)
 
 
+# Ask "Do you want to save before you..."
+def on_close(window):
+    modalAnswer = messagebox.askyesnocancel("Closing without saving.", "Unsaved\nDo you want to save before closing?")
+    
+    print(f"{modalAnswer=}")
+    if modalAnswer == False:
+        window.destroy()
+
+    elif modalAnswer == True:
+        print("save")
+        window.destroy()
+
+    else: 
+        print("Canceled close")
+
+
+
 # Reads the last oppened file
 def read_last_opened_file():
     check_snote_inf_exists()
