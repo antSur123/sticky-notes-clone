@@ -5,8 +5,6 @@ from functions import (startup_file_validation, handle_note_action,
                        create_delete_confirmation_window, update_title
                        )
 
-#// TODO  Add asterisk in not saved file. 
-#// TODO  Ask to save file before you close, open or create another note.
 
 # Setup checks
 startup_file_validation()
