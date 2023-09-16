@@ -1,23 +1,21 @@
 # Imports
 import tkinter as tk
-from functions import (check_save_dir_exists, check_snote_inf_exists,
-                       check_default_snote_exists, on_close, save_file, open_file,
-                       create_file_gui, read_last_opened_file,
-                       delete_file_confirmation
+from functions import (startup_file_validation, handle_note_action, 
+                       save_file, open_file, read_last_opened_file,
+                       create_delete_confirmation_window, update_title
                        )
 
-# TODO  Add asterisk in not saved file. Ask to save file before you close,
-# TODO      open or create another note.
+#// TODO  Add asterisk in not saved file. 
+#// TODO  Ask to save file before you close, open or create another note.
 
-check_save_dir_exists()
-check_default_snote_exists()
-check_snote_inf_exists()
+# Setup checks
+startup_file_validation()
+
 
 # Screen consts
-SCREEN_WIDTH = 400
+SCREEN_WIDTH = 403
 SCREEN_HEIGHT = SCREEN_WIDTH
 SCREEN_GEOMETRY = str(SCREEN_WIDTH) + "x" + str(SCREEN_HEIGHT)
-
 
 # Variable consts
 TXT_CHAR_WIDTH = 8
@@ -32,23 +30,32 @@ mainWin = tk.Tk()
 mainWin.title("Notes")
 mainWin.geometry(SCREEN_GEOMETRY)
 mainWin.resizable(0, 0)
-mainWin.protocol("WM_DELETE_WINDOW", lambda: on_close(mainWin))
 
 
 # Create Text Widget
-noteTextWidget = tk.Text(mainWin, TEXT_WIDGET_WIDTH, TEXT_WIDGET_HEIGHT)
 lastOpenedFile = read_last_opened_file()
+
+noteTextWidget = tk.Text(mainWin, width=TEXT_WIDGET_WIDTH, height=TEXT_WIDGET_HEIGHT)
 open_file(noteTextWidget, lastOpenedFile, mainWin)
 
+
+def on_text_change(event):
+    # Unsaved file warning
+    mainWin.after(10, lambda: update_title(noteTextWidget, mainWin))
+
+
 noteTextWidget.focus_set()
+noteTextWidget.bind("<Key>", on_text_change)
+
+mainWin.protocol("WM_DELETE_WINDOW", lambda: handle_note_action("close", noteTextWidget, mainWin))
 
 
 # Menu buttons
-# 2d list of buttons [ ["name", command], ["name1", command1], ... ]
-buttonList = [["Save",      lambda: save_file(noteTextWidget) ],
-              ["Open",      lambda: open_file(noteTextWidget, None, mainWin) ],
-              ["New Note",  lambda: create_file_gui(noteTextWidget, mainWin) ],
-              ["Delete Note", lambda: delete_file_confirmation(noteTextWidget, mainWin) ]
+# 2d list of buttons [ ["text", command], ["text1", command1], ... ]
+buttonList = [["Save",      lambda: save_file(noteTextWidget, mainWin) ],
+              ["Open",      lambda: handle_note_action("open", noteTextWidget, mainWin) ],
+              ["New Note",  lambda: handle_note_action("create", noteTextWidget, mainWin) ],
+              ["Delete Note", lambda: create_delete_confirmation_window(noteTextWidget, mainWin) ]
               ]
 
 noteTextWidget.grid(row=0, column=0, columnspan=len(buttonList))
